@@ -1,0 +1,8 @@
+# bootstrap.yml (in MenuRestApi)
+spring:
+  application:
+    name: anhee-menu-api  # Matches anhee-menu-api.yml in Git
+  cloud:
+    config:
+      uri: http://localhost:8888  # Config Server URL
+      fail-fast: true  # Crash if Config Server is unreachable
