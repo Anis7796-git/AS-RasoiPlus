@@ -2,11 +2,16 @@ package com.anhee.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.anhee.dto.ChefEntityDto;
 import com.anhee.dto.LoginDto;
 import com.anhee.dto.ProfileUpdateDto;
 import com.anhee.dto.RegisterDto;
@@ -19,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.Column;
 
 @RestController
 @Tag(name = "User API", description = "Handles user related operations (Register , Login , Profile Update")
@@ -84,5 +90,60 @@ public class UserApiController {
 
 	}
 	
+	
+	
+	
+//	
+//	@PostMapping(value = "/chefRegister", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//	public String chefRegister(@RequestBody ChefEntityDto entity,MultipartFile profile) {
+//		
+//		
+//		String msg= service.registerChef(entity,profile);
+//		
+//		return msg;
+//	}
+	
+	@PostMapping(value = "/chefRegister", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public String chefRegister(
+			
+			
+			 @RequestParam String email,
 
+				
+
+
+			    
+
+			    
+			  
+			    
+			 @RequestParam String password,
+			    @RequestParam String fullName,
+			    @RequestParam String specialityCuisine,
+			    @RequestParam Integer experienceYears,
+			    @RequestParam Double averageRating,
+			    @RequestParam String city,
+			    @RequestParam String approxLocation,
+			    @RequestParam String languagesSpoken,
+			    @RequestParam String availability,  // e.g. "9am-9pm"
+			    @RequestParam String hygieneScore,
+			    @RequestParam String certifications,
+			    @RequestParam int orderCount,
+			    @RequestParam("profileImage") MultipartFile profile) {
+			    
+			    ChefEntityDto dto = new ChefEntityDto(email, password, fullName, specialityCuisine, orderCount, orderCount, city, approxLocation, languagesSpoken, availability, hygieneScore, certifications, orderCount);
+		
+		System.out.println(dto.toString());
+		
+		
+	    return service.registerChef(dto, profile);
+	}
+
+	
+
+	
+
+
+	
+	
 }
