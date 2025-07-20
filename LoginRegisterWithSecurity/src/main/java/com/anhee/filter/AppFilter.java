@@ -1,7 +1,6 @@
 package com.anhee.filter;
 
 import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,13 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import com.anhee.service.IserviceMgmt;
 import com.anhee.service.JwtService;
-
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -29,25 +27,25 @@ public class AppFilter extends OncePerRequestFilter {
     @Autowired
     IserviceMgmt userDetailsService;
 
+    private static final String AUTH_COOKIE_NAME = "auth_token";
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
             throws ServletException, IOException, java.io.IOException {
         
         String path = request.getServletPath();
         
-        // Skip filtering for auth endpoints and static resources
+        // Skip auth for these paths
         if (path.startsWith("/api/auth") || path.startsWith("/error") || 
             path.startsWith("/resources") || path.startsWith("/static")) {
-            try {
-				filterChain.doFilter(request, response);
-			} catch (java.io.IOException | ServletException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            filterChain.doFilter(request, response);
             return;
         }
 
         String token = getTokenFromHeader(request);
+        if (token == null) {
+            token = getTokenFromCookie(request);
+        }
         
         if (token != null) {
             try {
@@ -55,13 +53,11 @@ public class AppFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 
                 if (jwtService.validateToken(token, userDetails)) {
-                    // Set authentication
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                     
-                    // Auto-route based on role for specific entry points
                     if (shouldAutoRoute(path)) {
                         String role = getHighestAuthority(userDetails.getAuthorities());
                         String dashboardPath = "/api/" + role.toLowerCase() + "/dashboard";
@@ -70,7 +66,6 @@ public class AppFilter extends OncePerRequestFilter {
                     }
                 }
             } catch (Exception e) {
-                // Handle invalid token
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
                 return;
             }
@@ -87,14 +82,22 @@ public class AppFilter extends OncePerRequestFilter {
         return null;
     }
 
+    private String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (AUTH_COOKIE_NAME.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     private boolean shouldAutoRoute(String path) {
-        // Auto-route for these entry points
-        return path.equals("/") || 
-               path.equals("/dashboard") ||
-               path.equals("/home") ||
-               path.equals("/chef") || 
-               path.equals("/customer") ||
-               path.equals("/kitchen") ||
+        return path.equals("/") || path.equals("/dashboard") ||
+               path.equals("/home") || path.equals("/chef") || 
+               path.equals("/customer") || path.equals("/kitchen") ||
                path.equals("/deliveryboy");
     }
 
