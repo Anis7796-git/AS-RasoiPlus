@@ -26,19 +26,19 @@ public class DashboardController {
     public String root(Model model) {
     	
     	
-    	ResponseEntity<List<Menu>> allMenu = feing.getAllMenu();
-    	 List<Menu> menuList = allMenu.getBody();
-    	
-    	List<TopMenuDto> menuDtoList= menuList.stream().map(
-    			menu -> new TopMenuDto(
-    					menu.getId(),
-    					menu.getItemName(),
-    					Base64.getEncoder().encodeToString(menu.getImage())
-    					)
-    			
-    			).toList();
-    	
-    	 model.addAttribute("menu", menuDtoList);
+//    	ResponseEntity<List<Menu>> allMenu = feing.getAllMenu();
+//    	 List<Menu> menuList = allMenu.getBody();
+//    	
+//    	List<TopMenuDto> menuDtoList= menuList.stream().map(
+//    			menu -> new TopMenuDto(
+//    					menu.getId(),
+//    					menu.getItemName(),
+//    					Base64.getEncoder().encodeToString(menu.getImage())
+//    					)
+//    			
+//    			).toList();
+//    	
+//    	 model.addAttribute("menu", menuDtoList);
     	
         return "dashboard";
     }

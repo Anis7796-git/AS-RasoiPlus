@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class kitchendto {
 	
-	
+
 	private String kitchenName;
-	private String location;
-	private  Double distance;
+	private String address;     //
+	private Double latitude;     // 
+	private Double longitude;
 	private Double rating;
 	
-	
+	private Long phonenumber;
 	
 
 }

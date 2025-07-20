@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.anhee.dto.Menu;
 
+;
 
-@FeignClient(name = "MenuAPI")
+@FeignClient(name = "ChefOrderServiceRestAPI")
 public interface IfeingConnector {
 
 	 @GetMapping("/getAllMenu")

@@ -21,10 +21,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/kitchen")
+//@RequestMapping("/kitchen")
 @Tag(name = "Kitchen Management", description = "APIs for managing kitchen operations")
 public class KitchenController {
 
+	
     @Autowired
     private IKitchenServiceMGmt service;
 
@@ -48,16 +49,19 @@ public class KitchenController {
     @PostMapping(value = "/savekitchen", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> saveKitchen(
             @RequestParam String kitchenName,
-            @RequestParam String location,
-            @RequestParam Double distance,
+            @RequestParam String address,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
             @RequestParam Double rating,
+            @RequestParam Long phonenumber,
+            
             @RequestParam MultipartFile image) {
 
-        if (kitchenName == null || location == null || image.isEmpty()) {
+        if (kitchenName == null || address == null || image.isEmpty()) {
             throw new ResourceNotFoundException("Kitchen name, location, or image must not be empty.");
         }
 
-        kitchendto dto = new kitchendto(kitchenName, location, distance, rating);
+        kitchendto dto = new kitchendto(kitchenName, address, latitude, longitude,rating,phonenumber);
         String msg = service.saveKitchen(dto, image);
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
