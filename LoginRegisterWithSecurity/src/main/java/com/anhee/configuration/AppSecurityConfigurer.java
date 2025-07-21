@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import com.anhee.filter.AppFilter;
 import com.anhee.service.IserviceMgmt;
@@ -93,7 +94,9 @@ public class AppSecurityConfigurer {
 	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	        )
 	        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
-	        .csrf().disable();
+	        .csrf(csrf-> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+	                .ignoringRequestMatchers("/api/auth/**") // Exclude auth endpoints if needed
+	                );
 	    
 	    return http.build();
 	}

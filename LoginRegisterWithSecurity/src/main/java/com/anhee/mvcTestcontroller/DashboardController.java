@@ -1,13 +1,16 @@
 package com.anhee.mvcTestcontroller;
 
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.anhee.entity.ChefEntity;
 import com.anhee.entity.CustomerEntity;
@@ -40,16 +43,19 @@ public class DashboardController {
 
     @GetMapping("/customer/dashboard")
     public String customerDashboard(HttpSession session) {
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	
-    	CustomerEntity customer=service.findcustomerBYEmail(auth.getName());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomerEntity customer = service.findcustomerBYEmail(auth.getName());
         
-    	customer.setPassword("Protected");
-    	
-    	session.setAttribute("customer", customer);
-    	
-    	System.out.println("DashboardController.customerDashboard()+==========");
-    	
+        customer.setPassword("Protected");
+        
+        // Convert byte array to Base64
+        if(customer.getProfileImage() != null && customer.getProfileImage().length > 0) {
+            String base64Image = Base64.getEncoder().encodeToString(customer.getProfileImage());
+            session.setAttribute("profileImageBase64", base64Image);
+        }
+        
+        session.setAttribute("customer", customer);
+        
         return "customerDashboard";
     }
 
@@ -74,4 +80,33 @@ public class DashboardController {
        session.setAttribute("deliveryboy", deliveryboy);
         return "deliveryboyDashboard";
     }
+    
+    
+    
+    
+    @GetMapping("/customer/editprofile")
+    public String showEditProfileForm(@RequestParam(required = false) Long customerId, 
+                                     @RequestParam(required = false) String email,
+                                     HttpSession session,
+                                     Model model) {
+        
+//        // If parameters are not provided, get from session
+//        if (customerId == null || email == null) {
+//            CustomerEntity customer = (CustomerEntity) session.getAttribute("customer");
+//            customerId = customer.getCustomerId();
+//            email = customer.getEmail();
+//        }
+//        
+//        // Get customer data from service
+//      //  CustomerEntity customer = service.findCustomerById(customerId);
+//        model.addAttribute("customer", customer);
+//        
+    	
+    	
+    	System.out.println("DashboardController.showEditProfileForm()+==================called with cookie token ");
+    	
+        return "editProfileForm"; // Your edit profile form view name
+    }
+    
+    
 }
