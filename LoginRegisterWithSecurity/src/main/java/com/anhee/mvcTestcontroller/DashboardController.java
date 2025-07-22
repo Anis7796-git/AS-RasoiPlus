@@ -61,10 +61,24 @@ public class DashboardController {
 
     @GetMapping("/kitchen/dashboard")
     public String kitchenDashboard(HttpSession session) {
+    	
+    	
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    kitchenEntity	kitchen=service.findkitchenBYEmail(auth.getName());
+    
+    	
+    	kitchenEntity	kitchen=service.findkitchenBYEmail(auth.getName());
+    
         
     	kitchen.setPassword("Protected");
+    	
+    	System.out.println("DashboardController.kitchenDashboard()========================================");
+    	
+    	if(kitchen.getKitchenImage()!=null&& kitchen.getKitchenImage().length>0) {
+    	//don't trust any one because  every one are selfish 	
+    		String base64Image= Base64.getEncoder().encodeToString(kitchen.getKitchenImage());
+    		
+    		session.setAttribute("profileImageBase64", base64Image);
+    	}
     	
     	session.setAttribute("kitchen", kitchen);
         return "kitchenDashboard";
@@ -72,12 +86,22 @@ public class DashboardController {
 
     @GetMapping("/deliveryboy/dashboard")
     public String deliveryBoyDashboard(HttpSession session) {
+    	
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	
     	DilveryBoyEntity deliveryboy=service.finddeliveryboyBYEmail(auth.getName());
+    	
        deliveryboy.setPassword("Protected");
        
+       if(deliveryboy.getImage()!=null&& deliveryboy.getImage().length>0) {
+    	   
+   		String base64Image= Base64.getEncoder().encodeToString(deliveryboy.getImage());
+   		
+   		session.setAttribute("profileImageBase64", base64Image);
+   	}
        
        session.setAttribute("deliveryboy", deliveryboy);
+       
         return "deliveryboyDashboard";
     }
     

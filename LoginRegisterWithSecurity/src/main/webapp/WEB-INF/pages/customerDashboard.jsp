@@ -2,7 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,8 +13,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="_csrf" content="${_csrf.token}"/>
-<meta name="_csrf_header" content="${_csrf.headerName}"/>
+<meta name="_csrf" content="${_csrf.token}" />
+<meta name="_csrf_header" content="${_csrf.headerName}" />
 <title>Dashboard | Premium Chef Booking</title>
 <!-- Bootstrap 5 CSS -->
 <link
@@ -540,23 +541,25 @@ to {
 					<li class="nav-item"><a class="nav-link active" href="#"><i
 							class="bi bi-house-door"></i> Home</a></li>
 					<li class="nav-item">
-  <form method="GET" action="/customer/bookChef" class="nav-link-form" style="display: inline;">
-    <button type="submit" class="nav-link" >
-      <i class="bi bi-bookmark-star"></i> Book a Chef
-    </button>
-  </form>
-</li>
+						<form method="GET" action="/customer/bookChef"
+							class="nav-link-form" style="display: inline;">
+							<button type="submit" class="nav-link">
+								<i class="bi bi-bookmark-star"></i> Book a Chef
+							</button>
+						</form>
+					</li>
 
-	<li class="nav-item">
-  <form method="GET" action="/customer/OrderHistory" class="nav-link-form" style="display: inline;">
-    <button type="submit" class="nav-link" >
-      <i class="bi bi-bookmark-star"></i> Order History
-    </button>
-  </form>
-</li>
+					<li class="nav-item">
+						<form method="GET" action="/customer/OrderHistory"
+							class="nav-link-form" style="display: inline;">
+							<button type="submit" class="nav-link">
+								<i class="bi bi-bookmark-star"></i> Order History
+							</button>
+						</form>
+					</li>
 
 
-					
+
 				</ul>
 
 				<!-- User Profile or Login/Register -->
@@ -579,20 +582,23 @@ to {
 									class="bi bi-person"></i> Profile</a></li>
 							<li><a class="dropdown-item" href="#"><i
 									class="bi bi-gear"></i> Settings</a></li>
-						<li>
-  <!-- Change your form from POST to GET -->
-<form method="POST" action="/customer/editprofile">
-    <input type="hidden" name="customerId" value="${customer.customerId}"/>
-    <input type="hidden" name="email" value="${customer.email}"/>
-    <button type="submit">Edit Profile</button>
-</form>
-</li>
-<li>
+							<li>
+								<!-- Change your form from POST to GET -->
+								<form method="POST" action="/customer/editprofile">
+									<input type="hidden" name="customerId"
+										value="${customer.customerId}" /> <input type="hidden"
+										name="email" value="${customer.email}" />
+									<button type="submit">Edit Profile</button>
+								</form>
+							</li>
+							<li>
 
-<form method="POST" action="/customer/test-csrf">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-    <button>Test CSRF</button>
-</form></li>
+								<form method="POST" action="/customer/test-csrf">
+									<input type="hidden" name="${_csrf.parameterName}"
+										value="${_csrf.token}" />
+									<button>Test CSRF</button>
+								</form>
+							</li>
 							<li><hr class="dropdown-divider"></li>
 							<li><a class="dropdown-item text-danger" href="#"><i
 									class="bi bi-box-arrow-right"></i> Logout</a></li>
