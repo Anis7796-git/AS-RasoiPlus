@@ -302,13 +302,14 @@
         <div class="floating-food" style="top: 60%; left: 70%; animation-delay: 6s;">🍣</div>
     </div>
     
-    <div class="error-container">
-        <h1 class="error-code">404</h1>
-        <h2 class="error-title">Oops! Page Not Found</h2>
-        <p class="error-message">The page you're looking for doesn't exist or has been moved.</p>
-        <p style="margin-bottom: 2rem;">Our delivery guy is searching everywhere but can't find it!</p>
-        <a href="/" class="home-btn">Take Me Home</a>
-    </div>
+   <div class="error-container">
+    <h1 class="error-code">${statusCode}</h1>
+    <h2 class="error-title">${errorTitle}</h2>
+    <p class="error-message">${errorMessage}</p>
+    <p>Request URI: ${requestUri}</p>
+    <p>Exception: ${exception}</p>
+    <a href="/" class="home-btn">Take Me Home</a>
+</div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

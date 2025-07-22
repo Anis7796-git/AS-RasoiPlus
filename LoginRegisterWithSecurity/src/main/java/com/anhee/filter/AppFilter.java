@@ -35,12 +35,12 @@ public class AppFilter extends OncePerRequestFilter {
         
         String path = request.getServletPath();
         
-        // Skip auth for these paths
         if (path.startsWith("/api/auth") || path.startsWith("/error") || 
-            path.startsWith("/resources") || path.startsWith("/static")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+                path.startsWith("/resources") || path.startsWith("/static") ||
+                path.equals("/favicon.ico")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
         String token = getTokenFromHeader(request);
         if (token == null) {
@@ -49,6 +49,24 @@ public class AppFilter extends OncePerRequestFilter {
         
         if (token != null) {
             try {
+            	
+            	
+            	//checking token expired or not 
+            	 if (jwtService.isTokenExpired(token)) {
+            		 
+            		 System.err.println("AppFilter.doFilterInternal() token expired condtion exicuted ....");
+                     // Token expired - send 401
+                     SecurityContextHolder.clearContext();
+                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                     response.getWriter().write("Token expired");
+                     return;
+                 }
+            	
+            	
+            	
+            	
+            	
+            	
                 String username = jwtService.extractUsername(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 

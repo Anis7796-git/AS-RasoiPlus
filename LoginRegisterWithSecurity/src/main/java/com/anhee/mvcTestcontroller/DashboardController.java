@@ -84,7 +84,7 @@ public class DashboardController {
     
     
     
-    @GetMapping("/customer/editprofile")
+    @PostMapping("/customer/editprofile")
     public String showEditProfileForm(@RequestParam(required = false) Long customerId, 
                                      @RequestParam(required = false) String email,
                                      HttpSession session,

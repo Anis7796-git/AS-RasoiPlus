@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
 import com.anhee.filter.AppFilter;
 import com.anhee.service.IserviceMgmt;
@@ -77,7 +78,7 @@ public class AppSecurityConfigurer {
 	            .requestMatchers(
 	                "/api/auth/**",
 	                "/error",
-	                "/front/login",
+	                "/front/login","/favicon.ico",
 	                "/WEB-INF/pages/**",
 	                "/loginRegister",
 	                "/swagger-ui/**",
@@ -91,11 +92,12 @@ public class AppSecurityConfigurer {
 	            .anyRequest().authenticated()
 	        )
 	        .sessionManagement(session -> session
-	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+	            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 	        )
 	        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
 	        .csrf(csrf-> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-	                .ignoringRequestMatchers("/api/auth/**") // Exclude auth endpoints if needed
+	        		.csrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler()::handle)
+	        		.ignoringRequestMatchers("/api/auth/**","/customer/editprofile") // Exclude auth endpoints if needed
 	                );
 	    
 	    return http.build();

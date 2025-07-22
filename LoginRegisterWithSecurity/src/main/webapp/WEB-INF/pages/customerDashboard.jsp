@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -538,13 +539,24 @@ to {
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item"><a class="nav-link active" href="#"><i
 							class="bi bi-house-door"></i> Home</a></li>
-					<li class="nav-item"><a class="nav-link"
-						href="chefBookCustomer.html"> <i class="bi bi-bookmark-star"></i>
-							Book a Chef
-					</a></li>
-					<li class="nav-item"><a class="nav-link"
-						href="customerOrderHistory.html"><i
-							class="bi bi-clock-history"></i> Order History</a></li>
+					<li class="nav-item">
+  <form method="GET" action="/customer/bookChef" class="nav-link-form" style="display: inline;">
+    <button type="submit" class="nav-link" >
+      <i class="bi bi-bookmark-star"></i> Book a Chef
+    </button>
+  </form>
+</li>
+
+	<li class="nav-item">
+  <form method="GET" action="/customer/OrderHistory" class="nav-link-form" style="display: inline;">
+    <button type="submit" class="nav-link" >
+      <i class="bi bi-bookmark-star"></i> Order History
+    </button>
+  </form>
+</li>
+
+
+					
 				</ul>
 
 				<!-- User Profile or Login/Register -->
@@ -567,10 +579,20 @@ to {
 									class="bi bi-person"></i> Profile</a></li>
 							<li><a class="dropdown-item" href="#"><i
 									class="bi bi-gear"></i> Settings</a></li>
-							<li><a class="dropdown-item" href="#"
-								onclick="editProfile('${customer.customerId}', '${customer.email}')">
-									<i class="bi bi-pencil-square"></i> Edit Profile
-							</a></li>
+						<li>
+  <!-- Change your form from POST to GET -->
+<form method="POST" action="/customer/editprofile">
+    <input type="hidden" name="customerId" value="${customer.customerId}"/>
+    <input type="hidden" name="email" value="${customer.email}"/>
+    <button type="submit">Edit Profile</button>
+</form>
+</li>
+<li>
+
+<form method="POST" action="/customer/test-csrf">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <button>Test CSRF</button>
+</form></li>
 							<li><hr class="dropdown-divider"></li>
 							<li><a class="dropdown-item text-danger" href="#"><i
 									class="bi bi-box-arrow-right"></i> Logout</a></li>
@@ -1207,32 +1229,62 @@ to {
         
         
         
-        function editProfile(customerId, email) {
-            // Create form dynamically
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/api/customer/editprofile';
-            
-            // Add fields
-            const addHiddenField = (name, value) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = name;
-                input.value = value;
-                form.appendChild(input);
-            };
-            
-            addHiddenField('customerId', customerId);
-            addHiddenField('email', email);
-            
-            // Add CSRF token
+        /* function editProfile(customerId, email) {
             const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-            addHiddenField('_csrf', csrfToken);
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+            fetch('/api/customer/editprofile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({
+                    customerId: customerId,
+                    email: email
+                })
+            }).then(response => {
+                if (response.ok) {
+                    // Optionally redirect or show success
+                    console.log("Profile edit request sent successfully.");
+                } else {
+                    console.error("CSRF failed or request blocked.");
+                }
+            }).catch(error => {
+                console.error("Error occurred: ", error);
+            });
+        } */
+
+        
+        
+        fetch("/api/secure/data")
+        .then(res => {
+          if (res.status === 401) {
+            alert("Session expired. Please log in again.");
+            window.location.href = "/login";
+          }
+          return res.json();
+        });
+        
+        
+        
+        
+        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+            // Get CSRF token from cookie
+            const csrfCookie = document.cookie.split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
             
-            // Submit form
-            document.body.appendChild(form);
-            form.submit();
-        }
+            // Add to form if found
+            if (csrfCookie) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_csrf';
+                csrfInput.value = csrfCookie;
+                e.target.appendChild(csrfInput);
+            }
+        });
+        
         
     </script>
 </body>
