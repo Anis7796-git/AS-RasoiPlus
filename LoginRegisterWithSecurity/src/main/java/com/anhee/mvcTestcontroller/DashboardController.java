@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.anhee.dto.KitchenAndMenuListDto;
 import com.anhee.entity.ChefEntity;
 import com.anhee.entity.CustomerEntity;
 import com.anhee.entity.DilveryBoyEntity;
 import com.anhee.entity.kitchenEntity;
+import com.anhee.service.FetchData;
 import com.anhee.service.IserviceMgmt;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +27,8 @@ import jakarta.servlet.http.HttpSession;
 public class DashboardController {
 	
 	@Autowired IserviceMgmt service;
+	
+	@Autowired FetchData fetchData;
 
     @GetMapping("/chef/dashboard")
     public String chefDashboard(HttpSession session) {
@@ -60,7 +64,7 @@ public class DashboardController {
     }
 
     @GetMapping("/kitchen/dashboard")
-    public String kitchenDashboard(HttpSession session) {
+    public String kitchenDashboard(HttpSession session,Model model) {
     	
     	
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -79,6 +83,8 @@ public class DashboardController {
     		
     		session.setAttribute("profileImageBase64", base64Image);
     	}
+    	
+    	KitchenAndMenuListDto kitchenAndMenuList=fetchData.getKitchns();
     	
     	session.setAttribute("kitchen", kitchen);
         return "kitchenDashboard";
@@ -131,6 +137,5 @@ public class DashboardController {
     	
         return "editProfileForm"; // Your edit profile form view name
     }
-    
     
 }

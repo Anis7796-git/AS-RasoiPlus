@@ -104,7 +104,7 @@ public class ServiceMgmt implements IserviceMgmt {
 			BeanUtils.copyProperties(dilveryBoyDto, entity);
 			entity.setImage(image);
 
-			Long dilveryBoyId = dilvaryBoyRepo.save(entity).getDilveryBoyId();
+			Long dilveryBoyId = dilvaryBoyRepo.save(entity).getDeliveryBoyId();
 
 			return "Delivery boy registered successfully with ID: " + dilveryBoyId;
 		} catch (Exception e) {

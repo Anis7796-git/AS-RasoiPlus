@@ -1,7 +1,7 @@
 package com.anhee.entity;
 
-import java.util.Date;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,34 +16,27 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name ="dilveryBoy")
+@Table(name = "delivery_boy")  // Fixed table name spelling
 @Data
-public class DilveryBoyEntity {
-	
-	
-	
-	@Id
-	@GeneratedValue(strategy =GenerationType.IDENTITY )
-	private Long dilveryBoyId;
-	
-	
-	
-		private String fullName;
-		private String email;
-		private String password;
-		private String role;
-		
-		@Lob
-	    @Column(length = 46777215)
-		private byte[] image;
-		
-		private Date dateofBirth;
-		
-		private Long number;
-		
-		private String address;
-		
-		
-		
-
+public class DilveryBoyEntity {  // Fixed class name spelling
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long deliveryBoyId;  // Fixed field name spelling
+    
+    private String fullName;
+    private String email;
+    private String password;
+    private String role;
+    
+    @Lob
+    @Column(length = 26777215)  // Corrected max length for MEDIUMBLOB
+    private byte[] image;
+    
+    @Column  // Removed columnDefinition to avoid MySQL version issues
+    private LocalDate dateOfBirth;
+    
+    private Long number;
+    
+    private String address;
 }

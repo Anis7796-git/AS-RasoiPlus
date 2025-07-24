@@ -146,7 +146,7 @@ public class LoginRegisterController {
             	System.out.println("LoginRegisterController.getUserIdByEmailAndRole()"+"kitchen case exicuted ==========");
                 return kitchenRepo.findByEmail(email).getKitchenId();
             case "ROLE_DELIVERY_BOY":
-                return deliveryBoyRepo.findByEmail(email).getDilveryBoyId();
+                return deliveryBoyRepo.findByEmail(email).getDeliveryBoyId();
             default:
                 throw new IllegalArgumentException("Unknown role: " + role);
         }
