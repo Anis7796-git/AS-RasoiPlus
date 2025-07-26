@@ -35,6 +35,12 @@ public class AppFilter extends OncePerRequestFilter {
         
         String path = request.getServletPath();
         
+        if (path.startsWith("/front/login")) {
+            clearAuthCookies(response);
+        }
+        
+        
+        
         if (path.startsWith("/api/auth") || path.startsWith("/error") || 
                 path.startsWith("/resources") || path.startsWith("/static") ||
                 path.equals("/favicon.ico")) {
@@ -57,6 +63,9 @@ public class AppFilter extends OncePerRequestFilter {
             		 System.err.println("AppFilter.doFilterInternal() token expired condtion exicuted ....");
                      // Token expired - send 401
                      SecurityContextHolder.clearContext();
+                    
+                     
+                     clearAuthCookies(response);
                      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                      response.getWriter().write("Token expired");
                      return;
@@ -92,6 +101,22 @@ public class AppFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    
+    private void clearAuthCookies(HttpServletResponse response) {
+        Cookie cookie = new Cookie(AUTH_COOKIE_NAME, null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        
+        cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+    
+    
     private String getTokenFromHeader(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {

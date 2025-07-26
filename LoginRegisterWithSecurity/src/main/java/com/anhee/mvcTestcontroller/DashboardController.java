@@ -84,7 +84,7 @@ public class DashboardController {
     		session.setAttribute("profileImageBase64", base64Image);
     	}
     	
-    	KitchenAndMenuListDto kitchenAndMenuList=fetchData.getKitchns();
+//    	KitchenAndMenuListDto kitchenAndMenuList=fetchData.getKitchns();
     	
     	session.setAttribute("kitchen", kitchen);
         return "kitchenDashboard";

@@ -92,8 +92,18 @@ public class AppSecurityConfigurer {
 	            .anyRequest().authenticated()
 	        )
 	        .sessionManagement(session -> session
-	            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-	        )
+	                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+	                .invalidSessionUrl("/front/login?invalidSession=true")
+	                .maximumSessions(1)
+	                .expiredUrl("/front/login?expired=true")
+	            )
+	            .logout(logout -> logout
+	                .logoutUrl("/perform_logout")
+	                .logoutSuccessUrl("/front/login?logout=true")
+	                .deleteCookies("JSESSIONID", "auth_token")
+	                .invalidateHttpSession(true)
+	                .permitAll()
+	            )
 	        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
 	        .csrf(csrf-> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 	        		.csrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler()::handle)
@@ -141,6 +151,8 @@ public class AppSecurityConfigurer {
 //	        return http.csrf().disable().build();
 //	    }
 //
+	
+	
 	    @Bean
 	    public WebSecurityCustomizer webSecurityCustomizer() {
 	        return (web) -> web.ignoring().requestMatchers(
