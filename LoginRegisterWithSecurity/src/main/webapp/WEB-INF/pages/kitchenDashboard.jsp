@@ -1,5 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,27 +251,73 @@ keyframes float { 0% {
 50
 
 
+
+
+
+
+
+
 %
 {
 transform
 
 
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
+
 translateY
+
+
+
+
+
+
 (
+
+
+
+
+
+
 
 
 -8px
 
 
+
+
+
+
+
+
 )
+
+
+
+
+
+
 ;
-
-
 }
 100
+
+
+
+
+
+
 
 
 %
@@ -274,20 +325,54 @@ translateY
 transform
 
 
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
+
 translateY
+
+
+
+
+
+
 (
+
+
+
+
+
+
 
 
 0px
 
 
+
+
+
+
+
+
 )
+
+
+
+
+
+
 ;
-
-
 }
 }
 .floating {
@@ -302,49 +387,135 @@ keyframes pulse { 0% {
 50
 
 
+
+
+
+
+
+
 %
 {
 transform
 
 
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
+
 scale
+
+
+
+
+
+
 (
 
 
+
+
+
+
+
+
 1
+
+
+
+
+
+
 .05
 
 
+
+
+
+
+
+
 )
+
+
+
+
+
+
 ;
-
-
 }
 100
 
 
+
+
+
+
+
+
 %
 {
 transform
 
 
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
+
 scale
+
+
+
+
+
+
 (
+
+
+
+
+
+
 
 
 1
 
 
+
+
+
+
+
+
 )
+
+
+
+
+
+
 ;
-
-
 }
 }
 .pulse {
@@ -379,6 +550,38 @@ scale
 		margin-bottom: 1rem;
 	}
 }
+
+
+
+
+/* Notification Styles */
+#notificationContainer .toast {
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 3s;
+}
+
+#notificationContainer .toast.success {
+    background-color: rgba(40, 167, 69, 0.9);
+}
+
+#notificationContainer .toast.error {
+    background-color: rgba(220, 53, 69, 0.9);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -654,12 +857,18 @@ scale
 							</h5>
 						</div>
 						<div class="card-body">
-							<form>
+							<form action="/addMenu" method="POST"
+								enctype="multipart/form-data">
+
+
+
+								<input type="hidden" name="kithcenId"
+									value="${sessionScope.kitchen.kitchenId}">
 								<div class="row">
 									<div class="col-md-6">
 										<div class="mb-3">
 											<label class="form-label">Category</label> <select
-												class="form-select">
+												class="form-select" name="category">
 												<option>Select Category</option>
 												<option>Appetizers</option>
 												<option>Main Courses</option>
@@ -669,23 +878,26 @@ scale
 										</div>
 										<div class="mb-3">
 											<label class="form-label">Item Name</label> <input
-												type="text" class="form-control"
+												type="text" name="itemName" class="form-control"
 												placeholder="e.g., Truffle Pasta">
+
 										</div>
 										<div class="mb-3">
 											<label class="form-label">Description</label>
-											<textarea class="form-control" rows="3"
+											<textarea name="description" class="form-control" rows="3"
 												placeholder="Brief description..."></textarea>
+
 										</div>
 									</div>
 									<div class="col-md-6">
 										<div class="mb-3">
 											<label class="form-label">Price</label> <input type="number"
-												class="form-control" placeholder="0.00">
+												name="price" class="form-control" placeholder="0.00">
+
 										</div>
 										<div class="mb-3">
 											<label class="form-label">Item Image</label> <input
-												type="file" class="form-control"> <small
+												type="file" name="itemImage" class="form-control"> <small
 												class="text-muted">Recommended size: 500x500px</small>
 										</div>
 										<div class="d-grid mt-4">
@@ -702,6 +914,19 @@ scale
 			</div>
 		</div>
 	</div>
+	
+	
+	<!-- Notification Container -->
+<div id="notificationContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1100; display: none;">
+    <div class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <span id="notificationMessage"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 
 	<!-- Bootstrap JS Bundle with Popper -->
 	<script
@@ -759,6 +984,61 @@ scale
                 newOrderIndicator.style.display = 'none';
             }, 2000);
         }, 10000);
+        
+        
+        
+        
+        
+        
+        
+     // Notification function
+        function showNotification(message, isSuccess) {
+            const container = document.getElementById('notificationContainer');
+            const toast = container.querySelector('.toast');
+            const messageElement = document.getElementById('notificationMessage');
+            
+            // Set message and style
+            messageElement.textContent = message;
+            toast.className = 'toast align-items-center text-white border-0';
+            toast.classList.add(isSuccess ? 'success' : 'error');
+            
+            // Show container
+            container.style.display = 'block';
+            
+            // Animation to show
+            setTimeout(() => {
+                container.style.opacity = '1';
+            }, 10);
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                container.style.opacity = '0';
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+
+        // Check for messages from server on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Check for success message
+            const successMessage = "${menuSaveSuccess}";
+            if (successMessage && successMessage !== "") {
+                showNotification(successMessage, true);
+            }
+            
+            // Check for error message
+            const errorMessage = "${menuSaveError}";
+            if (errorMessage && errorMessage !== "") {
+                showNotification(errorMessage, false);
+            }
+            
+            // Check for exception message
+            const exceptionMessage = "${MenuSaveEXception}";
+            if (exceptionMessage && exceptionMessage !== "") {
+                showNotification(exceptionMessage, false);
+            }
+        });
     </script>
 </body>
 </html>

@@ -13,8 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.anhee.filter.AppFilter;
 import com.anhee.service.IserviceMgmt;
@@ -92,23 +92,15 @@ public class AppSecurityConfigurer {
 	            .anyRequest().authenticated()
 	        )
 	        .sessionManagement(session -> session
-	                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-	                .invalidSessionUrl("/front/login?invalidSession=true")
-	                .maximumSessions(1)
-	                .expiredUrl("/front/login?expired=true")
-	            )
-	            .logout(logout -> logout
-	                .logoutUrl("/perform_logout")
-	                .logoutSuccessUrl("/front/login?logout=true")
-	                .deleteCookies("JSESSIONID", "auth_token")
-	                .invalidateHttpSession(true)
-	                .permitAll()
-	            )
+	            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+	        )
 	        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
-	        .csrf(csrf-> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-	        		.csrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler()::handle)
-	        		.ignoringRequestMatchers("/api/auth/**","/customer/editprofile") // Exclude auth endpoints if needed
-	                );
+	        .csrf().disable();
+//	        .csrf(csrf -> csrf
+//	        	    .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
+//	        	    .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/addMenu", "POST"))
+//	        		.ignoringRequestMatchers("/api/auth/**","/customer/editprofile") // Exclude auth endpoints if needed
+//	                );
 	    
 	    return http.build();
 	}
@@ -151,8 +143,6 @@ public class AppSecurityConfigurer {
 //	        return http.csrf().disable().build();
 //	    }
 //
-	
-	
 	    @Bean
 	    public WebSecurityCustomizer webSecurityCustomizer() {
 	        return (web) -> web.ignoring().requestMatchers(

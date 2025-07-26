@@ -72,6 +72,7 @@ public class DashboardController {
     	
     	kitchenEntity	kitchen=service.findkitchenBYEmail(auth.getName());
     
+    	
         
     	kitchen.setPassword("Protected");
     	
